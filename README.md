@@ -36,3 +36,4 @@ Unlike basic tutorials, this repo fixes common junior mistakes:
 
 ```bash
 export API_KEY="your_api_key"
+
