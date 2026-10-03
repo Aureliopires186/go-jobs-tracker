@@ -1,0 +1,55 @@
+go-jobs-tracker/ main.go
+
+
+#Example 1 - Google jobs - tracker :
+
+
+
+package main
+
+import (
+  "fmt"
+  "log"
+  "os"
+
+  g "github.com/serpapi/google-search-results-golang"
+)
+
+func main() {
+  apiKey := os.Getenv("SERPAPI_KEY")
+  if apiKey == "" {
+    log.Fatal("SERPAPI_KEY is not set")
+  }
+
+  params := map[string]string{
+    "engine": "google_jobs",
+    "q": "Go Developer",
+    "location": "Remote",
+    "hl": "en",
+  }
+
+  search := g.NewGoogleSearch(params, apiKey)
+  results, err := search.GetJSON()
+  if err!= nil {
+    log.Fatalf("SerpApi request failed: %v", err)
+  }
+
+  jobsRaw, ok := results["jobs_results"].([]interface{})
+  if!ok {
+    log.Printf("No jobs_results in response: %+v", results)
+    return
+  }
+
+  if len(jobsRaw) == 0 {
+    fmt.Println("No jobs found")
+    return
+  }
+
+  for _, j := range jobsRaw {
+    jobMap, ok := j.(map[string]interface{})
+    if!ok {
+      continue
+    }
+    fmt.Printf("[%v] %v - %v\n", jobMap["via"], jobMap["title"], jobMap["company_name"])
+  }
+}
